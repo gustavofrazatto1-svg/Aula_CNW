@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>CLAQUETE — Avaliação de filmes</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<nav><div class="wrap"><span class="logo">★ CLAQUETE</span><button id="theme" aria-label="Alternar tema">◐</button></div></nav>
+
+<header class="hero"><div class="wrap">
+<h1>NOTA <b>10</b><br>OU NADA</h1>
+<p>Descubra grandes filmes, dê sua nota e escreva sua crítica. A sua opinião entra na conta.</p>
+<div class="stats"><div id="s1">0<span>Filmes</span></div><div id="s2">0<span>Suas avaliações</span></div><div id="s3">–<span>Sua média</span></div></div>
+</div></header>
+
+<main class="wrap">
+<div class="bar"><div class="chips" id="chips"></div>
+<select id="sort"><option value="score">Nota da crítica</option><option value="year">Mais recentes</option><option value="title">A–Z</option></select></div>
+<div class="grid" id="grid"></div></main>
+
+<dialog id="dlg"><div class="dh" id="dh"><button class="x" id="close" aria-label="Fechar">✕</button><h2 id="dt"></h2><div id="dm"></div></div>
+<div class="db"><p id="ds"></p><h3>Sua nota</h3><div class="rate" id="rate"></div>
+<input type="text" id="who" placeholder="Seu nome" maxlength="30" style="margin-top:12px">
+<textarea id="txt" placeholder="Escreva sua crítica..." maxlength="400"></textarea>
+<button class="btn" id="send">PUBLICAR AVALIAÇÃO</button>
+<h3>Avaliações</h3><div id="revs"></div></div></dialog>
+
+<footer>Notas da crítica são editoriais. Avaliações do público ficam salvas no seu navegador.</footer>
+
+<script src="script.js"></script>
+</body>
+</html>

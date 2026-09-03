@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>CLAQUETE — Avaliação de filmes</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0b0b0f;--fg:#f3efe6;--card:#16161d;--mut:#9a98a3;--gold:#f5c542;--red:#d62839;--line:#2a2a35;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg:#f6f2ea;--fg:#16131a;--card:#fff;--mut:#6b6872;--gold:#c48a00;--line:#ddd6c8}}
+:root[data-theme="light"]{--bg:#f6f2ea;--fg:#16131a;--card:#fff;--mut:#6b6872;--gold:#c48a00;--line:#ddd6c8}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:"DM Sans",system-ui,sans-serif;line-height:1.5;overflow-x:hidden}
+h1,h2,h3{font-family:"Bebas Neue",Impact,sans-serif;font-weight:400;margin:0;letter-spacing:.02em}
+.wrap{max-width:1100px;margin:0 auto;padding:0 20px}
+nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+nav .wrap{display:flex;justify-content:space-between;align-items:center;height:56px}
+.logo{font-family:"Bebas Neue";font-size:28px;color:var(--gold);letter-spacing:.1em}
+#theme{background:none;border:1px solid var(--line);color:var(--fg);border-radius:50%;width:34px;height:34px;cursor:pointer}
+.hero{padding:70px 0 50px;background:radial-gradient(ellipse at 50% -20%,color-mix(in srgb,var(--gold) 28%,transparent),transparent 65%);text-align:center;position:relative}
+.hero::before,.hero::after{content:"";position:absolute;left:0;right:0;height:14px;background:repeating-linear-gradient(90deg,var(--line) 0 18px,transparent 18px 34px);opacity:.8}
+.hero::before{top:0}.hero::after{bottom:0}
+.hero h1{font-size:clamp(56px,13vw,150px);line-height:.9;color:var(--fg)}
+.hero h1 b{color:var(--gold);font-weight:400}
+.hero p{color:var(--mut);max-width:520px;margin:16px auto 0;font-size:18px}
+.stats{display:flex;justify-content:center;gap:34px;margin-top:28px;flex-wrap:wrap}
+.stats div{font-family:"Bebas Neue";font-size:40px;color:var(--gold);line-height:1}
+.stats span{display:block;font:500 12px "DM Sans";color:var(--mut);letter-spacing:.12em;text-transform:uppercase}
+.bar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-between;padding:30px 0 20px}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip,select,input[type=text],textarea{font:inherit;background:var(--card);color:var(--fg);border:1px solid var(--line);border-radius:999px;padding:7px 16px;cursor:pointer}
+.chip.on{background:var(--gold);color:#111;border-color:var(--gold);font-weight:700}
+select{border-radius:8px}
+.grid{display:grid;gap:22px;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));padding-bottom:70px}
+.film{background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden;cursor:pointer;transition:.25s;text-align:left;color:inherit;font:inherit;padding:0}
+.film:hover{transform:translateY(-6px);border-color:var(--gold);box-shadow:0 14px 30px -12px var(--gold)}
+.poster{aspect-ratio:2/3;display:flex;flex-direction:column;justify-content:flex-end;padding:14px;position:relative;color:#fff}
+.poster h3{font-size:30px;line-height:.95;text-shadow:0 2px 12px #000a}
+.poster small{opacity:.85;font-weight:700}
+.badge{position:absolute;top:10px;right:10px;background:#000b;border:1px solid var(--gold);color:var(--gold);border-radius:8px;padding:2px 8px;font-family:"Bebas Neue";font-size:22px}
+.meta{padding:10px 14px 14px;font-size:13px;color:var(--mut);display:flex;justify-content:space-between}
+.stars{color:var(--gold);letter-spacing:2px}
+dialog{background:var(--card);color:var(--fg);border:1px solid var(--gold);border-radius:16px;padding:0;width:min(680px,94vw);max-height:90vh;overflow:auto}
+dialog::backdrop{background:#000c;backdrop-filter:blur(4px)}
+.dh{padding:28px 26px;color:#fff;position:relative}
+.dh h2{font-size:48px;line-height:.95}
+.x{position:absolute;top:12px;right:14px;background:#0008;border:0;color:#fff;border-radius:50%;width:34px;height:34px;font-size:18px;cursor:pointer}
+.db{padding:22px 26px 28px}
+.db h3{font-size:24px;margin:20px 0 8px;color:var(--gold)}
+.rate{display:flex;gap:4px}
+.rate button{background:none;border:0;font-size:34px;color:var(--line);cursor:pointer;padding:0;transition:.1s}
+.rate button.on{color:var(--gold)}.rate button:hover{transform:scale(1.2)}
+textarea{width:100%;border-radius:10px;min-height:80px;margin:8px 0;cursor:text}
+input[type=text]{border-radius:8px;cursor:text;width:100%}
+.btn{background:var(--gold);color:#111;font:700 15px "DM Sans";border:0;border-radius:8px;padding:10px 22px;cursor:pointer}
+.rev{border-top:1px solid var(--line);padding:12px 0}
+.rev b{margin-right:8px}
+.empty{color:var(--mut)}
+footer{text-align:center;padding:30px;color:var(--mut);border-top:1px solid var(--line);font-size:14px}
+</style>
+</head>
+<body>
+<nav><div class="wrap"><span class="logo">★ CLAQUETE</span><button id="theme" aria-label="Alternar tema">◐</button></div></nav>
+
+<header class="hero"><div class="wrap">
+<h1>NOTA <b>10</b><br>OU NADA</h1>
+<p>Descubra grandes filmes, dê sua nota e escreva sua crítica. A sua opinião entra na conta.</p>
+<div class="stats"><div id="s1">0<span>Filmes</span></div><div id="s2">0<span>Suas avaliações</span></div><div id="s3">–<span>Sua média</span></div></div>
+</div></header>
+
+<main class="wrap">
+<div class="bar"><div class="chips" id="chips"></div>
+<select id="sort"><option value="score">Nota da crítica</option><option value="year">Mais recentes</option><option value="title">A–Z</option></select></div>
+<div class="grid" id="grid"></div></main>
+
+<dialog id="dlg"><div class="dh" id="dh"><button class="x" id="close" aria-label="Fechar">✕</button><h2 id="dt"></h2><div id="dm"></div></div>
+<div class="db"><p id="ds"></p><h3>Sua nota</h3><div class="rate" id="rate"></div>
+<input type="text" id="who" placeholder="Seu nome" maxlength="30" style="margin-top:12px">
+<textarea id="txt" placeholder="Escreva sua crítica..." maxlength="400"></textarea>
+<button class="btn" id="send">PUBLICAR AVALIAÇÃO</button>
+<h3>Avaliações</h3><div id="revs"></div></div></dialog>
+
+<footer>Notas da crítica são editoriais. Avaliações do público ficam salvas no seu navegador.</footer>
+
+<script>
+const F=[
+{id:1,t:"Cidade de Deus",y:2002,g:"Drama",d:"Fernando Meirelles",s:8.6,h:25,x:"A vida de jovens numa comunidade do Rio de Janeiro entre os anos 60 e 80, narrada com energia e crueza."},
+{id:2,t:"Parasita",y:2019,g:"Thriller",d:"Bong Joon-ho",s:8.5,h:150,x:"Uma família pobre se infiltra, aos poucos, na casa de uma família rica, e nada sai como planejado."},
+{id:3,t:"O Poderoso Chefão",y:1972,g:"Crime",d:"Francis Ford Coppola",s:9.2,h:5,x:"A saga de uma família mafiosa e a transformação de um filho relutante em herdeiro do império."},
+{id:4,t:"Interestelar",y:2014,g:"Ficção",d:"Christopher Nolan",s:8.7,h:215,x:"Com a Terra em colapso, astronautas cruzam um buraco de minhoca em busca de um novo lar."},
+{id:5,t:"Pulp Fiction",y:1994,g:"Crime",d:"Quentin Tarantino",s:8.9,h:45,x:"Histórias cruzadas de criminosos em Los Angeles, entre diálogos afiados e violência estilizada."},
+{id:6,t:"A Viagem de Chihiro",y:2001,g:"Animação",d:"Hayao Miyazaki",s:8.6,h:180,x:"Uma menina fica presa num mundo de espíritos e precisa trabalhar numa casa de banhos para libertar os pais."},
+{id:7,t:"Central do Brasil",y:1998,g:"Drama",d:"Walter Salles",s:8.0,h:35,x:"Uma ex-professora e um garoto órfão atravessam o sertão atrás de um pai que ele nunca conheceu."},
+{id:8,t:"Mad Max: Estrada da Fúria",y:2015,g:"Ação",d:"George Miller",s:8.1,h:20,x:"Uma perseguição ininterrupta pelo deserto pós-apocalíptico contra um tirano e seu exército."},
+{id:9,t:"Whiplash",y:2014,g:"Drama",d:"Damien Chazelle",s:8.5,h:350,x:"Um jovem baterista enfrenta um professor impiedoso na busca pela perfeição."},
+{id:10,t:"Clube da Luta",y:1999,g:"Thriller",d:"David Fincher",s:8.8,h:12,x:"Um funcionário insone encontra um vendedor de sabão carismático e funda um clube subterrâneo."}
+];
+let R={};try{R=JSON.parse(localStorage.getItem("claq")||"{}")}catch(e){}
+const save=()=>{try{localStorage.setItem("claq",JSON.stringify(R))}catch(e){}};
+const $=i=>document.getElementById(i);
+const grad=h=>`linear-gradient(180deg,hsl(${h} 70% 35%),hsl(${(h+40)%360} 60% 12%))`;
+const avg=id=>{const a=R[id]||[];return a.length?a.reduce((s,r)=>s+r.n,0)/a.length:0};
+const st=n=>"★".repeat(Math.round(n))+"☆".repeat(5-Math.round(n));
+let filter="Todos",cur=null,pick=0;
+const genres=["Todos",...new Set(F.map(f=>f.g))];
+$("chips").innerHTML=genres.map(g=>`<button class="chip${g=="Todos"?" on":""}" data-g="${g}">${g}</button>`).join("");
+$("chips").onclick=e=>{const b=e.target.closest(".chip");if(!b)return;filter=b.dataset.g;document.querySelectorAll(".chip").forEach(c=>c.classList.toggle("on",c===b));draw()};
+$("sort").onchange=draw;
+function draw(){
+ const k=$("sort").value;
+ const l=F.filter(f=>filter=="Todos"||f.g==filter).sort((a,b)=>k=="score"?b.s-a.s:k=="year"?b.y-a.y:a.t.localeCompare(b.t));
+ $("grid").innerHTML=l.map(f=>{const a=avg(f.id);return `<button class="film" data-id="${f.id}"><div class="poster" style="background:${grad(f.h)}"><span class="badge">${f.s.toFixed(1)}</span><h3>${f.t}</h3><small>${f.y} · ${f.g}</small></div><div class="meta"><span>${f.d.split(" ").slice(-1)}</span><span class="stars">${a?st(a):"☆☆☆☆☆"}</span></div></button>`}).join("");
+ const all=Object.values(R).flat();
+ $("s1").firstChild.textContent=F.length;
+ $("s2").firstChild.textContent=all.length;
+ $("s3").firstChild.textContent=all.length?(all.reduce((s,r)=>s+r.n,0)/all.length).toFixed(1):"–";
+}
+$("grid").onclick=e=>{const b=e.target.closest(".film");if(b)open(+b.dataset.id)};
+function open(id){
+ cur=F.find(f=>f.id==id);pick=0;
+ $("dh").style.background=grad(cur.h);
+ $("dt").textContent=cur.t;
+ $("dm").textContent=`${cur.y} · ${cur.g} · Dir. ${cur.d} · Crítica ${cur.s.toFixed(1)}/10`;
+ $("ds").textContent=cur.x;$("txt").value="";
+ stars();revs();$("dlg").showModal();
+}
+function stars(){$("rate").innerHTML=[1,2,3,4,5].map(i=>`<button data-n="${i}" class="${i<=pick?"on":""}" aria-label="${i} estrelas">★</button>`).join("")}
+$("rate").onclick=e=>{const b=e.target.closest("button");if(!b)return;pick=+b.dataset.n;stars()};
+function revs(){
+ const a=R[cur.id]||[];
+ $("revs").innerHTML=a.length?a.slice().reverse().map(r=>`<div class="rev"><b>${esc(r.w)}</b><span class="stars">${st(r.n)}</span><div>${esc(r.t)}</div></div>`).join(""):'<p class="empty">Seja o primeiro a avaliar.</p>';
+}
+const esc=s=>s.replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+$("send").onclick=()=>{
+ if(!pick){alert("Escolha de 1 a 5 estrelas.");return}
+ (R[cur.id]=R[cur.id]||[]).push({n:pick,w:$("who").value.trim()||"Anônimo",t:$("txt").value.trim()||"Sem comentário."});
+ save();pick=0;$("txt").value="";stars();revs();draw();
+};
+$("close").onclick=()=>$("dlg").close();
+$("dlg").onclick=e=>{if(e.target==$("dlg"))$("dlg").close()};
+$("theme").onclick=()=>{const r=document.documentElement;const dark=getComputedStyle(r).getPropertyValue("--bg").trim()=="#0b0b0f";r.setAttribute("data-theme",dark?"light":"dark")};
+draw();
+</script>
+</body>
+</html>
