@@ -29,6 +29,7 @@ const App = {
       osc.type = type;
       osc.frequency.setValueAtTime(freq, this.audioCtx.currentTime);
       gain.gain.setValueAtTime(0.1, this.audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, this.audioCtx.currentTime + duration);
       osc.connect(gain);
       gain.connect(this.audioCtx.destination);
       osc.start();
@@ -59,11 +60,13 @@ const App = {
       const el = document.getElementById(`hs-${key}`);
       if (el) el.textContent = this.scores[key];
     });
-    document.getElementById('global-score').textContent = total;
+    const globalEl = document.getElementById('global-score');
+    if (globalEl) globalEl.textContent = total;
   },
 
   setupBackgroundCanvas() {
     const canvas = document.getElementById('bg-canvas');
+    if (!canvas) return;
     const ctx = canvas.getContext('2d');
     let width = (canvas.width = window.innerWidth);
     let height = (canvas.height = window.innerHeight);
@@ -93,10 +96,13 @@ const App = {
   },
 
   bindEvents() {
-    document.getElementById('sound-toggle-btn').addEventListener('click', (e) => {
-      this.soundEnabled = !this.soundEnabled;
-      e.currentTarget.querySelector('i').className = this.soundEnabled ? 'fa-solid fa-volume-high' : 'fa-solid fa-volume-xmark';
-    });
+    const soundBtn = document.getElementById('sound-toggle-btn');
+    if (soundBtn) {
+      soundBtn.addEventListener('click', (e) => {
+        this.soundEnabled = !this.soundEnabled;
+        e.currentTarget.querySelector('i').className = this.soundEnabled ? 'fa-solid fa-volume-high' : 'fa-solid fa-volume-xmark';
+      });
+    }
 
     document.querySelectorAll('.filter-btn').forEach(btn => {
       btn.addEventListener('click', (e) => {
@@ -110,20 +116,31 @@ const App = {
     });
 
     document.querySelectorAll('.game-card').forEach(card => {
-      card.querySelector('.play-btn').addEventListener('click', () => this.openGame(card.dataset.game));
-    });
-
-    document.getElementById('back-btn').addEventListener('click', () => this.closeGame());
-    document.getElementById('restart-btn').addEventListener('click', () => {
-      if (this.currentGame && Games[this.currentGame]) Games[this.currentGame].start();
-    });
-
-    document.getElementById('start-game-btn').addEventListener('click', () => {
-      if (this.currentGame && Games[this.currentGame]) {
-        document.getElementById('game-overlay').classList.add('hidden');
-        Games[this.currentGame].start();
+      const btn = card.querySelector('.play-btn');
+      if (btn) {
+        btn.addEventListener('click', () => this.openGame(card.dataset.game));
       }
     });
+
+    const backBtn = document.getElementById('back-btn');
+    if (backBtn) backBtn.addEventListener('click', () => this.closeGame());
+
+    const restartBtn = document.getElementById('restart-btn');
+    if (restartBtn) {
+      restartBtn.addEventListener('click', () => {
+        if (this.currentGame && Games[this.currentGame]) Games[this.currentGame].start();
+      });
+    }
+
+    const startBtn = document.getElementById('start-game-btn');
+    if (startBtn) {
+      startBtn.addEventListener('click', () => {
+        if (this.currentGame && Games[this.currentGame]) {
+          document.getElementById('game-overlay').classList.add('hidden');
+          Games[this.currentGame].start();
+        }
+      });
+    }
   },
 
   openGame(gameKey) {
@@ -719,8 +736,10 @@ Games.simon = {
     let interval = setInterval(() => {
       if (i >= this.sequence.length) { clearInterval(interval); return; }
       let b = btns[this.sequence[i]];
-      b.classList.add('active'); App.playSound(300 + this.sequence[i] * 150, 'sine', 0.2);
-      setTimeout(() => b.classList.remove('active'), 300);
+      if (b) {
+        b.classList.add('active'); App.playSound(300 + this.sequence[i] * 150, 'sine', 0.2);
+        setTimeout(() => b.classList.remove('active'), 300);
+      }
       i++;
     }, 600);
   }
