@@ -1,3 +1,14 @@
+/* Remove a barra de rolagem em todos os navegadores */
+html, body {
+  overflow-x: hidden;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE e Edge */
+}
+
+html::-webkit-scrollbar, body::-webkit-scrollbar {
+  display: none; /* Chrome, Safari e Opera */
+}
+
 :root {
   --bg-dark: #07090e;
   --panel-bg: rgba(15, 20, 32, 0.9);
@@ -12,18 +23,9 @@
   --font-heading: 'Orbitron', sans-serif;
   --font-body: 'Rajdhani', sans-serif;
 }
-/* Esconde a barra de rolagem no Chrome, Safari e Opera */
-body::-webkit-scrollbar {
-  display: none;
-}
 
-/* Esconde a barra de rolagem no IE, Edge e Firefox */
-body {
-  -ms-overflow-style: none;  /* IE and Edge */
-  scrollbar-width: none;  /* Firefox */
-}
 * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
-body { background: var(--bg-dark); color: var(--text-main); font-family: var(--font-body); min-height: 100vh; overflow-x: hidden; }
+body { background: var(--bg-dark); color: var(--text-main); font-family: var(--font-body); min-height: 100vh; }
 #bg-canvas { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 0; pointer-events: none; }
 .app-container { position: relative; z-index: 1; max-width: 1200px; margin: 0 auto; padding: 20px; display: flex; flex-direction: column; gap: 20px; }
 
