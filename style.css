@@ -111,3 +111,12 @@ body { background: var(--bg-dark); color: var(--text-main); font-family: var(--f
 .btn-red { background: #ff0055; color: #ff0055; }
 .btn-yellow { background: #ffb700; color: #ffb700; }
 .btn-blue { background: #00f0ff; color: #00f0ff; }
+
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden; /* Corta qualquer excesso e impede o scroll */
+  background: var(--bg-dark);
+  color: var(--text-main);
+  font-family: var(--font-body);
+}
