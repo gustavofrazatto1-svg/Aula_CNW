@@ -13,6 +13,42 @@
   --font-body: 'Rajdhani', sans-serif;
 }
 
+/* Esconde os controlo em computadores por padrão */
+.controles-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    user-select: none; /* Impede de selecionar texto ao tocar rapidamente */
+    -webkit-user-select: none;
+}
+
+.dpad {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.dpad-meio {
+    display: flex;
+    gap: 20px;
+}
+
+.btn-touch {
+    width: 60px;
+    height: 60px;
+    font-size: 24px;
+    background-color: rgba(255, 255, 255, 0.2);
+    color: white;
+    border: 2px solid white;
+    border-radius: 50%;
+    touch-action: manipulation; /* Evita zoom ao dar duplo toque */
+}
+
+.btn-touch:active {
+    background-color: rgba(255, 255, 255, 0.6);
+}
+
 * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
 body { background: var(--bg-dark); color: var(--text-main); font-family: var(--font-body); min-height: 100vh; }
 #bg-canvas { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 0; pointer-events: none; }
