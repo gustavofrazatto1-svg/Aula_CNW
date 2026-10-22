@@ -178,6 +178,40 @@ const App = {
 
 const Games = {};
 
+// Função para simular o pressionar de uma tecla do teclado
+function simularTecla(codigoTecla, tipoEvento) {
+    const evento = new KeyboardEvent(tipoEvento, {
+        key: codigoTecla,
+        code: codigoTecla,
+        bubbles: true
+    });
+    document.dispatchEvent(evento);
+}
+
+// Mapear botão do ecrã com a tecla equivalente
+function ligarBotao(idBotao, tecla) {
+    const btn = document.getElementById(idBotao);
+
+    // Quando o utilizador toca no botão
+    btn.addEventListener('touchstart', (e) => {
+        e.preventDefault(); // Evita comportamentos padrão do navegador
+        simularTecla(tecla, 'keydown');
+    });
+
+    // Quando o utilizador tira o dedo do botão
+    btn.addEventListener('touchend', (e) => {
+        e.preventDefault();
+        simularTecla(tecla, 'keyup');
+    });
+}
+
+// Configurar os botões (Ajusta 'ArrowLeft', 'Space', etc. para as tuas teclas)
+ligarBotao('btn-esquerda', 'ArrowLeft');
+ligarBotao('btn-direita', 'ArrowRight');
+ligarBotao('btn-cima', 'ArrowUp');
+ligarBotao('btn-baixo', 'ArrowDown');
+ligarBotao('btn-acao', 'Space'); // Ex: Barra de espaço para saltar/atirar
+
 // 1. Space Blaster
 Games.space = {
   init() {
