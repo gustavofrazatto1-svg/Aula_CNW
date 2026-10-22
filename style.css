@@ -14,7 +14,7 @@
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
-body { background: var(--bg-dark); color: var(--text-main); font-family: var(--font-body); min-height: 100vh; }
+body { background: var(--bg-dark); color: var(--text-main); font-family: var(--font-body); min-height: 100vh; overflow-x: hidden; }
 #bg-canvas { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 0; pointer-events: none; }
 .app-container { position: relative; z-index: 1; max-width: 1200px; margin: 0 auto; padding: 20px; display: flex; flex-direction: column; gap: 20px; }
 
@@ -64,7 +64,7 @@ body { background: var(--bg-dark); color: var(--text-main); font-family: var(--f
 .action-btn { padding: 8px 16px; border-radius: 6px; font-family: var(--font-heading); cursor: pointer; border: none; }
 .action-btn.primary { background: var(--primary-neon); color: #000; }
 .action-btn.secondary { background: rgba(255, 255, 255, 0.1); color: var(--text-main); border: 1px solid var(--border-color); }
-.game-hud { display: flex; justify-space-around; background: rgba(0, 0, 0, 0.4); padding: 10px; border-radius: 6px; }
+.game-hud { display: flex; justify-content: space-around; background: rgba(0, 0, 0, 0.4); padding: 10px; border-radius: 6px; }
 .hud-item { font-family: var(--font-heading); font-size: 1.1rem; }
 .hud-item span { color: var(--accent-neon); }
 
