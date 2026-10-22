@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Aula CNW - Jogo Arcade</title>
     <link rel="stylesheet" href="style.css">
 </head>
@@ -12,23 +12,23 @@
     </header>
 
     <main class="game-container">
-        <!-- Tela/Canvas do Jogo -->
+        <!-- Tela do jogo -->
         <div id="game-screen">
-            <p id="game-status">Pressione o botão para começar!</p>
+            <p id="game-status">Aperte uma tecla ou um botão para começar!</p>
         </div>
 
-        <!-- Controlos Virtuais para Telemóvel / Mobile -->
+        <!-- Controles virtuais para celular -->
         <div id="controles-mobile" class="controles-container">
             <div class="dpad">
-                <button id="btn-cima" class="btn-touch">▲</button>
+                <button id="btn-cima" class="btn-touch" type="button" aria-label="Cima">▲</button>
                 <div class="dpad-meio">
-                    <button id="btn-esquerda" class="btn-touch">◄</button>
-                    <button id="btn-direita" class="btn-touch">►</button>
+                    <button id="btn-esquerda" class="btn-touch" type="button" aria-label="Esquerda">◄</button>
+                    <button id="btn-direita" class="btn-touch" type="button" aria-label="Direita">►</button>
                 </div>
-                <button id="btn-baixo" class="btn-touch">▼</button>
+                <button id="btn-baixo" class="btn-touch" type="button" aria-label="Baixo">▼</button>
             </div>
             <div class="botoes-acao">
-                <button id="btn-acao" class="btn-touch btn-principal">A</button>
+                <button id="btn-acao" class="btn-touch btn-principal" type="button" aria-label="Ação">A</button>
             </div>
         </div>
     </main>

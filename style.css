@@ -13,6 +13,9 @@ body {
     align-items: center;
     justify-content: center;
     min-height: 100vh;
+    min-height: 100dvh; /* celular: não corta embaixo por causa da barra do navegador */
+    padding: 16px;
+    overflow-x: hidden;
 }
 
 header {
@@ -37,10 +40,12 @@ header {
     display: flex;
     align-items: center;
     justify-content: center;
+    text-align: center;
+    padding: 10px;
     box-shadow: 0 0 15px rgba(0, 255, 204, 0.3);
 }
 
-/* Controlos Virtuais para Mobile */
+/* Controles virtuais para celular */
 .controles-container {
     display: flex;
     justify-content: space-between;
@@ -50,6 +55,7 @@ header {
     padding: 10px;
     user-select: none;
     -webkit-user-select: none;
+    -webkit-touch-callout: none;
 }
 
 .dpad {
@@ -72,7 +78,10 @@ header {
     color: white;
     border: 2px solid #00ffcc;
     border-radius: 50%;
-    touch-action: manipulation;
+    touch-action: none; /* o navegador não interpreta o toque como rolagem/zoom */
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+    -webkit-user-select: none;
     cursor: pointer;
     display: flex;
     align-items: center;
