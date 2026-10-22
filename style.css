@@ -1,16 +1,13 @@
-/* Força a rolagem a funcionar e esconde totalmente a barra em qualquer navegador */
+/* Esconde a barra de rolagem mas mantém o scroll funcional */
 html, body {
-  overflow-y: scroll !important;
-  scrollbar-width: none !important; /* Firefox */
-  -ms-overflow-style: none !important; /* IE e Edge */
+  overflow-y: scroll;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
 
-/* Chrome, Safari, Edge moderno e Opera */
 html::-webkit-scrollbar,
 body::-webkit-scrollbar {
-  width: 0 !important;
-  height: 0 !important;
-  display: none !important;
+  display: none;
 }
 
 :root {
