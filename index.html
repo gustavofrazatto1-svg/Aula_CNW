@@ -2,191 +2,104 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Arcade Nexus - 10 Mini Jogos</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#07090e">
+  <title>Nexus Arcade — Mini Games</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <link rel="stylesheet" href="style.css">
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-
   <canvas id="bg-canvas"></canvas>
 
   <div class="app-container">
-    <!-- Header -->
+
+    <!-- Cabeçalho -->
     <header class="main-header">
       <div class="logo-box">
         <i class="fa-solid fa-gamepad logo-icon"></i>
-        <h1>ARCADE<span>NEXUS</span></h1>
+        <div>
+          <h1>NEXUS<span>ARCADE</span></h1>
+          <p class="tagline">10 mini games · recordes salvos no navegador</p>
+        </div>
       </div>
       <div class="header-actions">
-        <button id="sound-toggle-btn" class="icon-btn" title="Alternar Som"><i class="fa-solid fa-volume-high"></i></button>
-        <div class="stat-badge">
-          <i class="fa-solid fa-trophy"></i>
-          <span id="global-score">0</span>
+        <div class="stat-badge rank-badge" title="Seu rank (baseado nos pontos totais)">
+          <i class="fa-solid fa-medal"></i><span id="rank-name">Novato</span>
         </div>
+        <div class="stat-badge" title="Pontos totais (soma dos recordes)">
+          <i class="fa-solid fa-trophy"></i><span id="global-score">0</span>
+        </div>
+        <button class="icon-btn sound-toggle" id="sound-toggle-btn" type="button" title="Ligar/desligar som" aria-label="Ligar ou desligar o som">
+          <i class="fa-solid fa-volume-high"></i>
+        </button>
+        <button class="icon-btn" id="reset-scores-btn" type="button" title="Zerar recordes" aria-label="Zerar todos os recordes">
+          <i class="fa-solid fa-trash"></i>
+        </button>
       </div>
     </header>
 
-    <!-- Nav Filters -->
-    <nav class="nav-filters">
-      <button class="filter-btn active" data-category="all">Todos (10)</button>
-      <button class="filter-btn" data-category="action">Ação</button>
-      <button class="filter-btn" data-category="puzzle">Puzzle</button>
-      <button class="filter-btn" data-category="classic">Clássicos</button>
-    </nav>
-
-    <!-- Hub Grid (10 Jogos) -->
-    <main id="hub-view" class="hub-grid">
-      <div class="game-card" data-category="action" data-game="space">
-        <div class="card-media color-1"><i class="fa-solid fa-shuttle-space"></i></div>
-        <div class="card-body">
-          <h3>Space Blaster</h3>
-          <p>Destrua naves e asteroides na galáxia.</p>
-          <div class="card-footer">
-            <span class="high-score-tag"><i class="fa-solid fa-star"></i> <span id="hs-space">0</span></span>
-            <button class="play-btn">JOGAR <i class="fa-solid fa-play"></i></button>
-          </div>
-        </div>
-      </div>
-
-      <div class="game-card" data-category="action" data-game="jump">
-        <div class="card-media color-2"><i class="fa-solid fa-person-running"></i></div>
-        <div class="card-body">
-          <h3>Pixel Jump</h3>
-          <p>Corra e salte sobre os obstáculos cibernéticos.</p>
-          <div class="card-footer">
-            <span class="high-score-tag"><i class="fa-solid fa-star"></i> <span id="hs-jump">0</span></span>
-            <button class="play-btn">JOGAR <i class="fa-solid fa-play"></i></button>
-          </div>
-        </div>
-      </div>
-
-      <div class="game-card" data-category="puzzle" data-game="memory">
-        <div class="card-media color-3"><i class="fa-solid fa-brain"></i></div>
-        <div class="card-body">
-          <h3>Memory Match</h3>
-          <p>Teste sua memória combinando os pares neon.</p>
-          <div class="card-footer">
-            <span class="high-score-tag"><i class="fa-solid fa-star"></i> <span id="hs-memory">0</span></span>
-            <button class="play-btn">JOGAR <i class="fa-solid fa-play"></i></button>
-          </div>
-        </div>
-      </div>
-
-      <div class="game-card" data-category="classic" data-game="snake">
-        <div class="card-media color-4"><i class="fa-solid fa-staff-snake"></i></div>
-        <div class="card-body">
-          <h3>Cyber Snake</h3>
-          <p>O clássico da cobrinha em estilo digital.</p>
-          <div class="card-footer">
-            <span class="high-score-tag"><i class="fa-solid fa-star"></i> <span id="hs-snake">0</span></span>
-            <button class="play-btn">JOGAR <i class="fa-solid fa-play"></i></button>
-          </div>
-        </div>
-      </div>
-
-      <div class="game-card" data-category="classic" data-game="breaker">
-        <div class="card-media color-5"><i class="fa-solid fa-cubes-stacked"></i></div>
-        <div class="card-body">
-          <h3>Neon Breaker</h3>
-          <p>Quebre todos os blocos com a rebatedora e a esfera.</p>
-          <div class="card-footer">
-            <span class="high-score-tag"><i class="fa-solid fa-star"></i> <span id="hs-breaker">0</span></span>
-            <button class="play-btn">JOGAR <i class="fa-solid fa-play"></i></button>
-          </div>
-        </div>
-      </div>
-
-      <div class="game-card" data-category="classic" data-game="pong">
-        <div class="card-media color-6"><i class="fa-solid fa-table-tennis-paddle-ball"></i></div>
-        <div class="card-body">
-          <h3>Cyber Pong</h3>
-          <p>Partida clássica de tênis de mesa contra a IA.</p>
-          <div class="card-footer">
-            <span class="high-score-tag"><i class="fa-solid fa-star"></i> <span id="hs-pong">0</span></span>
-            <button class="play-btn">JOGAR <i class="fa-solid fa-play"></i></button>
-          </div>
-        </div>
-      </div>
-
-      <div class="game-card" data-category="puzzle" data-game="tetris">
-        <div class="card-media color-7"><i class="fa-solid fa-shapes"></i></div>
-        <div class="card-body">
-          <h3>Cyber Blocks</h3>
-          <p>Encaixe as peças geométricas e limpe as linhas.</p>
-          <div class="card-footer">
-            <span class="high-score-tag"><i class="fa-solid fa-star"></i> <span id="hs-tetris">0</span></span>
-            <button class="play-btn">JOGAR <i class="fa-solid fa-play"></i></button>
-          </div>
-        </div>
-      </div>
-
-      <div class="game-card" data-category="puzzle" data-game="g2048">
-        <div class="card-media color-8"><i class="fa-solid fa-hashtag"></i></div>
-        <div class="card-body">
-          <h3>2048 Neon</h3>
-          <p>Junte os blocos numéricos até alcançar o 2048.</p>
-          <div class="card-footer">
-            <span class="high-score-tag"><i class="fa-solid fa-star"></i> <span id="hs-g2048">0</span></span>
-            <button class="play-btn">JOGAR <i class="fa-solid fa-play"></i></button>
-          </div>
-        </div>
-      </div>
-
-      <div class="game-card" data-category="action" data-game="flappy">
-        <div class="card-media color-1"><i class="fa-solid fa-crow"></i></div>
-        <div class="card-body">
-          <h3>Neon Flappy</h3>
-          <p>Voe com precisão desviando dos obstáculos de laser.</p>
-          <div class="card-footer">
-            <span class="high-score-tag"><i class="fa-solid fa-star"></i> <span id="hs-flappy">0</span></span>
-            <button class="play-btn">JOGAR <i class="fa-solid fa-play"></i></button>
-          </div>
-        </div>
-      </div>
-
-      <div class="game-card" data-category="puzzle" data-game="simon">
-        <div class="card-media color-2"><i class="fa-solid fa-lightbulb"></i></div>
-        <div class="card-body">
-          <h3>Cyber Simon</h3>
-          <p>Memorize e repita a sequência de luzes e sons neon.</p>
-          <div class="card-footer">
-            <span class="high-score-tag"><i class="fa-solid fa-star"></i> <span id="hs-simon">0</span></span>
-            <button class="play-btn">JOGAR <i class="fa-solid fa-play"></i></button>
-          </div>
-        </div>
-      </div>
+    <!-- Hub -->
+    <main id="hub-view">
+      <nav class="nav-filters" aria-label="Categorias">
+        <button class="filter-btn active" type="button" data-category="all">Todos</button>
+        <button class="filter-btn" type="button" data-category="arcade">Arcade</button>
+        <button class="filter-btn" type="button" data-category="puzzle">Puzzle</button>
+        <button class="filter-btn" type="button" data-category="reflex">Reflexo</button>
+      </nav>
+      <section id="hub-grid" class="hub-grid" aria-label="Lista de jogos"></section>
     </main>
 
-    <!-- Game View -->
+    <!-- Tela de jogo -->
     <section id="game-view" class="game-view hidden">
       <div class="game-header">
-        <button id="back-btn" class="action-btn secondary"><i class="fa-solid fa-arrow-left"></i> Sair</button>
-        <h2 id="current-game-title">Jogo</h2>
-        <button id="restart-btn" class="action-btn primary"><i class="fa-solid fa-rotate-right"></i> Reiniciar</button>
+        <button id="back-btn" class="action-btn secondary" type="button"><i class="fa-solid fa-arrow-left"></i> <span>Voltar</span></button>
+        <h2 id="current-game-title">Mini Game</h2>
+        <div class="game-header-actions">
+          <button id="pause-btn" class="action-btn secondary" type="button" title="Pausar (P)" aria-label="Pausar"><i class="fa-solid fa-pause"></i></button>
+          <button id="restart-btn" class="action-btn secondary" type="button" title="Reiniciar" aria-label="Reiniciar"><i class="fa-solid fa-rotate-right"></i></button>
+          <button class="action-btn secondary sound-toggle" type="button" title="Som" aria-label="Som"><i class="fa-solid fa-volume-high"></i></button>
+        </div>
       </div>
 
       <div class="game-hud">
-        <div class="hud-item">PONTOS: <span id="live-score">0</span></div>
-        <div class="hud-item">RECORD: <span id="live-highscore">0</span></div>
+        <div class="hud-item">PONTOS <span id="live-score">0</span></div>
+        <div class="hud-item">RECORDE <span id="live-highscore">0</span></div>
+        <div class="hud-item"><em id="extra-label">EXTRA</em> <span id="live-extra">-</span></div>
       </div>
 
-      <div id="canvas-container" class="canvas-container">
-        <canvas id="game-canvas" width="600" height="400"></canvas>
+      <div id="stage" class="stage">
+        <div id="canvas-container" class="canvas-container">
+          <canvas id="game-canvas"></canvas>
+        </div>
+
+        <div id="custom-game-container" class="custom-game-container hidden">
+          <div id="memory-grid" class="memory-grid hidden"></div>
+          <div id="g2048-wrap" class="g2048-wrap hidden">
+            <div id="g2048-grid" class="g2048-grid"></div>
+          </div>
+          <div id="simon-wrap" class="simon-wrap hidden">
+            <p id="simon-status">—</p>
+            <div id="simon-grid" class="simon-grid"></div>
+          </div>
+        </div>
+
         <div id="game-overlay" class="game-overlay">
+          <div class="overlay-icon"><i id="overlay-icon" class="fa-solid fa-play"></i></div>
           <h2 id="overlay-title">PRONTO?</h2>
-          <p id="overlay-msg">Pressione Iniciar para Jogar</p>
-          <button id="start-game-btn" class="main-start-btn"><i class="fa-solid fa-play"></i> INICIAR</button>
+          <p id="overlay-msg">Pressione Iniciar para jogar</p>
+          <p id="overlay-best" class="overlay-best"></p>
+          <button id="start-game-btn" class="main-start-btn" type="button">INICIAR</button>
+          <p id="overlay-controls" class="overlay-controls"></p>
         </div>
       </div>
 
-      <div id="custom-game-container" class="custom-game-container hidden">
-        <div id="memory-grid" class="memory-grid hidden"></div>
-        <div id="g2048-grid" class="g2048-grid hidden"></div>
-        <div id="simon-grid" class="simon-grid hidden"></div>
-      </div>
+      <p id="controls-hint" class="controls-hint"></p>
     </section>
+
+    <footer class="main-footer">Feito com <i class="fa-solid fa-heart"></i> e JavaScript puro</footer>
   </div>
 
   <script src="script.js"></script>
