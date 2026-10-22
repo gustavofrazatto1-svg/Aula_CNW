@@ -20,7 +20,7 @@ const CATEGORIES = { arcade: 'Arcade', puzzle: 'Puzzle', reflex: 'Reflexo' };
 const GAME_LIST = [
   { id: 'space',   title: 'Space Blaster', icon: 'fa-rocket',    cat: 'arcade', color: '#00f0ff', extra: 'VIDAS',
     desc: 'Destrua as naves inimigas antes que elas passem por você.',
-    controls: 'Setas ou A/D movem · ESPAÇO atira (segure) · P pausa · Celular: arraste para mover (atira sozinho)' },
+    controls: 'W/S frente e trás · A/D lados (ou setas) · ESPAÇO atira (segure) · P pausa · Celular: arraste para mover (atira sozinho)' },
   { id: 'jump',    title: 'Pixel Jump',    icon: 'fa-person-running', cat: 'reflex', color: '#00ff66', extra: 'VELOCIDADE',
     desc: 'Corra, pule os espinhos e agache sob os drones.',
     controls: 'ESPAÇO / ↑ pula (segure = pulo maior) · ↓ agacha · Celular: toque para pular, deslize p/ baixo para agachar' },
@@ -231,6 +231,15 @@ const App = {
     }
     ctx.globalAlpha = 1;
   },
+  // Desenha uma vez numa tela escondida e devolve a imagem pronta (para fundos pesados)
+  makeCache(drawFn) {
+    const c = document.createElement('canvas');
+    c.width = W * this.dpr; c.height = H * this.dpr;
+    const x = c.getContext('2d');
+    x.setTransform(this.dpr, 0, 0, this.dpr, 0, 0);
+    drawFn(x);
+    return c;
+  },
   glow(ctx, color, blur = 12) { ctx.shadowColor = color; ctx.shadowBlur = blur; },
   noGlow(ctx) { ctx.shadowBlur = 0; },
   rrect(ctx, x, y, w, h, r) {
@@ -392,8 +401,10 @@ const App = {
     stage.addEventListener('pointerdown', (e) => {
       if (e.target.closest('button') || this.state !== 'running') return;
       const g = this.game(); if (!g) return;
+      // Jogos de clique (memória, simon) NÃO podem capturar o ponteiro, senão o clique não chega nas cartas/botões
+      if (g.type !== 'canvas' && !g.swipe) return;
       down = true; sx = e.clientX; sy = e.clientY;
-      try { stage.setPointerCapture(e.pointerId); } catch (err) {}
+      if (g.type === 'canvas') { try { stage.setPointerCapture(e.pointerId); } catch (err) {} }
       if (g.onPointer) { const p = pos(e); g.onPointer('down', p.x, p.y, true); }
     });
 
@@ -609,10 +620,10 @@ Games.space = {
   type: 'canvas',
 
   start() {
-    this.p = { x: W / 2, y: H - 40, w: 34, h: 26, speed: 5.5, cool: 0, inv: 0, lives: 3 };
+    this.p = { x: W / 2, y: H - 60, w: 34, h: 26, speed: 7.5, cool: 0, inv: 0, lives: 3 };
     this.bullets = []; this.enemies = [];
     this.t = 0; this.level = 1; this.kills = 0;
-    this.ptrX = null; this.firing = false; this.over = false;
+    this.ptr = null; this.firing = false; this.over = false;
     App.setExtra('♥♥♥');
   },
 
@@ -627,9 +638,9 @@ Games.space = {
     this.enemies.push(e);
   },
 
-  hurt(force) {
+  hurt() {
     const p = this.p;
-    if (this.over || (!force && p.inv > 0)) return;
+    if (this.over || p.inv > 0) return;
     p.lives--;
     p.inv = 90;
     App.addShake(10);
@@ -645,16 +656,27 @@ Games.space = {
   update() {
     if (this.over) return;
     const p = this.p, k = App.keys;
-    const dir = ((k['ArrowRight'] || k['d']) ? 1 : 0) - ((k['ArrowLeft'] || k['a']) ? 1 : 0);
-    if (dir) { p.x += dir * p.speed; this.ptrX = null; }
-    else if (this.ptrX !== null) p.x += clamp(this.ptrX - p.x, -p.speed * 1.6, p.speed * 1.6);
+    // W/S = frente/trás, A/D = lados (setas também). Resposta instantânea, sem aceleração.
+    const dx = ((k['ArrowRight'] || k['d']) ? 1 : 0) - ((k['ArrowLeft'] || k['a']) ? 1 : 0);
+    const dy = ((k['ArrowDown'] || k['s']) ? 1 : 0) - ((k['ArrowUp'] || k['w']) ? 1 : 0);
+    if (dx || dy) {
+      const len = Math.hypot(dx, dy);           // diagonal não fica mais rápida
+      p.x += dx / len * p.speed;
+      p.y += dy / len * p.speed;
+      this.ptr = null;
+    } else if (this.ptr) {                      // celular: nave segue o dedo (um pouco acima dele)
+      const tx = this.ptr.x, ty = this.ptr.y - 36, d = Math.hypot(tx - p.x, ty - p.y);
+      if (d > 0.5) { const m = Math.min(d, 13); p.x += (tx - p.x) / d * m; p.y += (ty - p.y) / d * m; }
+    }
+    // a nave nunca sai da tela
     p.x = clamp(p.x, p.w / 2, W - p.w / 2);
+    p.y = clamp(p.y, p.h / 2 + 2, H - p.h / 2 - 8);
     if (p.cool > 0) p.cool--;
     if (p.inv > 0) p.inv--;
 
     if ((k[' '] || this.firing) && p.cool === 0) {
       this.bullets.push({ x: p.x, y: p.y - p.h / 2, w: 4, h: 12 });
-      p.cool = 11;
+      p.cool = 9;
       App.playSound(720, 'square', 0.06, 0.035, 360);
     }
 
@@ -667,11 +689,14 @@ Games.space = {
     for (const e of this.enemies) {
       e.y += e.vy; e.age++;
       if (e.kind === 'zig') e.x = e.x0 + Math.sin(e.age * 0.06) * e.amp;
-      if (e.y - e.h / 2 > H) { e.dead = true; this.hurt(true); }
-      else if (p.inv === 0 && Math.abs(e.x - p.x) < (e.w + p.w) / 2 - 4 && Math.abs(e.y - p.y) < (e.h + p.h) / 2 - 4) {
+      // inimigo que passa da tela some SEM dar dano
+      if (e.y - e.h / 2 > H + 10) { e.dead = true; continue; }
+      // dano só quando o inimigo realmente encosta no corpo da nave (hitbox justa, menor que o desenho)
+      const hx = e.w * 0.38 + p.w * 0.28, hy = e.h * 0.38 + p.h * 0.32;
+      if (p.inv === 0 && Math.abs(e.x - p.x) < hx && Math.abs(e.y - p.y) < hy) {
         e.dead = true;
         App.burst(e.x, e.y, e.color, 16);
-        this.hurt(false);
+        this.hurt();
       }
     }
 
@@ -697,9 +722,9 @@ Games.space = {
   },
 
   onPointer(t, x, y, down) {
-    if (t === 'down') { this.firing = true; this.ptrX = x; }
-    else if (t === 'move' && down) this.ptrX = x;
-    else if (t === 'up') this.firing = false;
+    if (t === 'down') { this.firing = true; this.ptr = { x, y }; }
+    else if (t === 'move' && down) this.ptr = { x, y };
+    else if (t === 'up') { this.firing = false; this.ptr = null; }
   },
 
   drawEnemy(ctx, e) {
@@ -777,14 +802,16 @@ Games.jump = {
     this.gy = H - 60;
     this.p = { x: 70, y: this.gy, w: 26, hStand: 36, hDuck: 20, h: 36, vy: 0, ground: true, duck: 0 };
     this.obs = []; this.speed = 5; this.dist = 0; this.t = 0; this.gap = 240; this.scroll = 0;
-    this.hold = 0; this.over = false;
+    this.hold = 0; this.buf = 0; this.over = false;
     this.layers = [this.mkLayer(0.15, '#10142a', 60, 140), this.mkLayer(0.35, '#161c3d', 40, 100)];
     App.setExtra('x1.0');
   },
 
   jump() {
     const p = this.p;
-    if (!p.ground || this.over) return;
+    if (this.over) return;
+    // apertou um pouco antes de pousar? guarda o pulo por ~9 frames e executa assim que tocar o chão
+    if (!p.ground) { this.buf = 9; return; }
     p.vy = -12.2; p.ground = false; this.hold = 14;
     App.playSound(420, 'sine', 0.12, 0.06, 760);
     App.burst(p.x, this.gy, '#00f0ff', 6, 2, 16);
@@ -802,6 +829,7 @@ Games.jump = {
     if (this.over) return;
     const p = this.p, k = App.keys;
     this.t++;
+    if (this.buf > 0) this.buf--;
     this.speed = Math.min(13, 5 + this.t / 600);
     this.dist += this.speed * 0.1;
     this.scroll += this.speed;
@@ -819,6 +847,7 @@ Games.jump = {
     if (p.y >= this.gy) {
       p.y = this.gy; p.vy = 0;
       if (!p.ground) { p.ground = true; App.burst(p.x, this.gy, '#00f0ff', 6, 2, 16); }
+      if (this.buf > 0) { this.buf = 0; this.jump(); }   // pulo guardado
     }
 
     this.gap -= this.speed;
@@ -855,14 +884,26 @@ Games.jump = {
   },
 
   draw(ctx) {
-    const sky = ctx.createLinearGradient(0, 0, 0, H);
-    sky.addColorStop(0, '#1a0a3a'); sky.addColorStop(0.6, '#0b1030'); sky.addColorStop(1, '#070a18');
-    ctx.fillStyle = sky; ctx.fillRect(0, 0, W, H);
-
-    App.glow(ctx, '#ff0055', 40);
-    ctx.fillStyle = '#ff2f7a';
-    ctx.beginPath(); ctx.arc(470, 120, 46, 0, Math.PI * 2); ctx.fill();
-    App.noGlow(ctx);
+    // Céu + sol e chão com brilho (shadowBlur) são PESADOS de desenhar: fazemos uma vez só e reaproveitamos.
+    // Isso evita queda de frames, que era a causa do "atraso" nos botões.
+    if (!this.bgCache) {
+      this.bgCache = App.makeCache((c) => {
+        const sky = c.createLinearGradient(0, 0, 0, H);
+        sky.addColorStop(0, '#1a0a3a'); sky.addColorStop(0.6, '#0b1030'); sky.addColorStop(1, '#070a18');
+        c.fillStyle = sky; c.fillRect(0, 0, W, H);
+        App.glow(c, '#ff0055', 40);
+        c.fillStyle = '#ff2f7a';
+        c.beginPath(); c.arc(470, 120, 46, 0, Math.PI * 2); c.fill();
+        App.noGlow(c);
+      });
+      this.groundCache = App.makeCache((c) => {
+        c.fillStyle = '#06210f'; c.fillRect(0, this.gy, W, H - this.gy);
+        App.glow(c, '#00ff66', 10);
+        c.fillStyle = '#00ff66'; c.fillRect(0, this.gy, W, 3);
+        App.noGlow(c);
+      });
+    }
+    ctx.drawImage(this.bgCache, 0, 0, W, H);
 
     for (const L of this.layers) {
       const off = (this.scroll * L.speed) % L.total;
@@ -879,11 +920,8 @@ Games.jump = {
       }
     }
 
-    // chão
-    ctx.fillStyle = '#06210f'; ctx.fillRect(0, this.gy, W, H - this.gy);
-    App.glow(ctx, '#00ff66', 10);
-    ctx.fillStyle = '#00ff66'; ctx.fillRect(0, this.gy, W, 3);
-    App.noGlow(ctx);
+    // chão (imagem pronta + tracinhos que andam)
+    ctx.drawImage(this.groundCache, 0, 0, W, H);
     ctx.fillStyle = 'rgba(0,255,102,0.35)';
     for (let x = -((this.scroll) % 60); x < W; x += 60) ctx.fillRect(x, this.gy + 18, 30, 2);
 
