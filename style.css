@@ -1,15 +1,3 @@
-/* Esconde a barra de rolagem mas mantém o scroll funcional */
-html, body {
-  overflow-y: scroll;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-}
-
-html::-webkit-scrollbar,
-body::-webkit-scrollbar {
-  display: none;
-}
-
 :root {
   --bg-dark: #07090e;
   --panel-bg: rgba(15, 20, 32, 0.9);
