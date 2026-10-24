@@ -62,6 +62,7 @@ const App = {
   soundEnabled: true,
   audioCtx: null,
   scores: { space: 0, jump: 0, memory: 0, snake: 0, breaker: 0, pong: 0, tetris: 0, g2048: 0, flappy: 0, simon: 0 },
+  scoreKey: 'nexus_scores_v2',   // chave do perfil ativo (convidado). Ao logar vira 'nexus_scores_user_<id>'
   currentGame: null,
   state: 'hub',            // hub | ready | running | paused | over
   keys: {},
@@ -107,25 +108,38 @@ const App = {
   },
 
   /* ---------- Placar ---------- */
-  loadScores() {
-    try {
-      const saved = localStorage.getItem('nexus_scores_v2');
-      if (saved) this.scores = { ...this.scores, ...JSON.parse(saved) };
-    } catch (e) {}
+  /* Dois "perfis" de recordes: convidado (sem login) e cada conta online. Nunca se misturam. */
+  readStoredScores(key) {
+    const out = {};
+    let saved = {};
+    try { saved = JSON.parse(localStorage.getItem(key) || '{}') || {}; } catch (e) {}
+    Object.keys(this.scores).forEach(k => { out[k] = Math.max(0, Math.floor(Number(saved[k]) || 0)); });
+    return out;
+  },
+
+  // Troca o perfil ativo. "extra" (ex.: recordes vindos da nuvem) é combinado pegando sempre o MAIOR valor.
+  useProfile(key, extra) {
+    this.scoreKey = key;
+    const local = this.readStoredScores(key);
+    Object.keys(local).forEach(k => { local[k] = Math.max(local[k], Math.floor(Number(extra && extra[k]) || 0)); });
+    this.scores = local;
+    try { localStorage.setItem(key, JSON.stringify(this.scores)); } catch (e) {}
     this.updateScoreDisplays();
   },
+
+  loadScores() { this.useProfile(this.scoreKey); },
 
   saveScore(game, score) {
     if (score > (this.scores[game] || 0)) {
       this.scores[game] = score;
-      try { localStorage.setItem('nexus_scores_v2', JSON.stringify(this.scores)); } catch (e) {}
+      try { localStorage.setItem(this.scoreKey, JSON.stringify(this.scores)); } catch (e) {}
       this.updateScoreDisplays();
     }
   },
 
   resetScores() {
     Object.keys(this.scores).forEach(k => this.scores[k] = 0);
-    try { localStorage.setItem('nexus_scores_v2', JSON.stringify(this.scores)); } catch (e) {}
+    try { localStorage.setItem(this.scoreKey, JSON.stringify(this.scores)); } catch (e) {}
     this.updateScoreDisplays();
   },
 
@@ -332,6 +346,10 @@ const App = {
     }));
 
     document.getElementById('reset-scores-btn').addEventListener('click', () => {
+      if (typeof Online !== 'undefined' && Online.user) {
+        Online.toast('Recordes de uma conta fazem parte do ranking e não podem ser zerados. Saia da conta para zerar os de convidado.');
+        return;
+      }
       if (confirm('Zerar todos os recordes? Isso não pode ser desfeito.')) this.resetScores();
     });
 
@@ -339,6 +357,11 @@ const App = {
       btn.addEventListener('click', () => {
         document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
+        // volta da tela de Ranking para a lista de jogos
+        const rv = document.getElementById('ranking-view'), hg = document.getElementById('hub-grid'), rb = document.getElementById('open-ranking-btn');
+        if (rv) rv.classList.add('hidden');
+        if (hg) hg.classList.remove('hidden');
+        if (rb) rb.classList.remove('active');
         const cat = btn.dataset.category;
         document.querySelectorAll('.game-card').forEach(card => {
           card.style.display = (cat === 'all' || card.dataset.category === cat) ? 'flex' : 'none';
@@ -368,6 +391,8 @@ const App = {
   setupInput() {
     const block = new Set(['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', ' ']);
     window.addEventListener('keydown', (e) => {
+      // digitando em campo de texto (login/senha)? o jogo não deve roubar as teclas
+      if (e.target && e.target.tagName && /^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName)) return;
       if (!this.currentGame || e.ctrlKey || e.metaKey || e.altKey) return;
       if (block.has(e.key)) e.preventDefault();
       const k = this.normKey(e.key);
@@ -492,6 +517,7 @@ const App = {
   },
 
   closeGame() {
+    if (typeof Online !== 'undefined') Online.flush();   // envia recordes novos para a nuvem
     this.clearTimers();
     if (this.raf) cancelAnimationFrame(this.raf);
     this.raf = null;
@@ -549,6 +575,7 @@ const App = {
     this.clearTimers();
     const s = this.score;
     this.saveScore(this.currentGame, s);
+    if (typeof Online !== 'undefined') Online.flush();   // partida acabou: envia recorde para a nuvem
     const record = s > this.bestAtStart && s > 0;
     if (win) this.sfxWin(); else this.sfxLose();
     const id = this.currentGame;

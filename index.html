@@ -10,6 +10,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="online.css">
 </head>
 <body>
   <canvas id="bg-canvas"></canvas>
@@ -22,10 +23,17 @@
         <i class="fa-solid fa-gamepad logo-icon"></i>
         <div>
           <h1>NEXUS<span>ARCADE</span></h1>
-          <p class="tagline">10 mini games · recordes salvos no navegador</p>
+          <p class="tagline">10 mini games · ranking online com sua conta</p>
         </div>
       </div>
       <div class="header-actions">
+        <button class="stat-badge auth-chip" id="auth-btn" type="button" title="Entrar ou criar conta">
+          <i id="auth-icon" class="fa-solid fa-user"></i><span id="auth-label">Entrar</span>
+        </button>
+        <span class="sync-badge hidden" id="sync-badge" title="Recordes sincronizados"><i id="sync-icon" class="fa-solid fa-cloud sync-ok"></i></span>
+        <button class="icon-btn hidden" id="logout-btn" type="button" title="Sair da conta" aria-label="Sair da conta">
+          <i class="fa-solid fa-right-from-bracket"></i>
+        </button>
         <div class="stat-badge rank-badge" title="Seu rank (baseado nos pontos totais)">
           <i class="fa-solid fa-medal"></i><span id="rank-name">Novato</span>
         </div>
@@ -48,8 +56,34 @@
         <button class="filter-btn" type="button" data-category="arcade">Arcade</button>
         <button class="filter-btn" type="button" data-category="puzzle">Puzzle</button>
         <button class="filter-btn" type="button" data-category="reflex">Reflexo</button>
+        <button class="rank-tab-btn" id="open-ranking-btn" type="button"><i class="fa-solid fa-ranking-star"></i> Ranking</button>
       </nav>
       <section id="hub-grid" class="hub-grid" aria-label="Lista de jogos"></section>
+
+      <!-- Ranking online -->
+      <section id="ranking-view" class="ranking-view hidden" aria-label="Ranking de jogadores">
+        <div class="ranking-head">
+          <h2><i class="fa-solid fa-ranking-star"></i> Ranking de jogadores</h2>
+          <button id="rank-refresh" class="action-btn secondary" type="button"><i class="fa-solid fa-rotate-right"></i> <span>Atualizar</span></button>
+        </div>
+        <div id="rank-gate" class="rank-gate hidden">
+          <p id="rank-gate-msg"></p>
+          <button id="rank-login-btn" class="main-start-btn hidden" type="button">ENTRAR / CRIAR CONTA</button>
+        </div>
+        <div id="rank-body">
+          <div id="rank-tabs" class="rank-tabs"></div>
+          <div class="rank-layout">
+            <div class="rank-list-wrap">
+              <p id="rank-me" class="rank-me"></p>
+              <ol id="rank-list" class="rank-list"></ol>
+            </div>
+            <aside class="compare-panel" aria-live="polite">
+              <h3><i class="fa-solid fa-scale-balanced"></i> Comparar pontuações</h3>
+              <div id="compare-body"></div>
+            </aside>
+          </div>
+        </div>
+      </section>
     </main>
 
     <!-- Tela de jogo -->
@@ -102,6 +136,42 @@
     <footer class="main-footer">Feito com <i class="fa-solid fa-heart"></i> e JavaScript puro</footer>
   </div>
 
+  <!-- Janela de login / cadastro -->
+  <div id="auth-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="auth-title">
+    <div class="modal-card">
+      <button id="auth-close" class="modal-close" type="button" aria-label="Fechar">&times;</button>
+      <h2 id="auth-title">Entrar</h2>
+      <div class="auth-tabs">
+        <button id="tab-login" class="active" type="button">Entrar</button>
+        <button id="tab-register" type="button">Criar conta</button>
+      </div>
+      <form id="auth-form" class="auth-form" novalidate>
+        <label>Nome de usuário
+          <input id="auth-user" type="text" autocomplete="username" maxlength="16" autocapitalize="none" spellcheck="false" placeholder="ex.: gustavo_01">
+        </label>
+        <label>Senha
+          <input id="auth-pass" type="password" autocomplete="current-password" placeholder="mínimo 6 caracteres">
+        </label>
+        <label id="auth-pass2-wrap" class="hidden">Repita a senha
+          <input id="auth-pass2" type="password" autocomplete="new-password">
+        </label>
+        <p id="auth-error" class="auth-error" role="alert"></p>
+        <button id="auth-submit" class="main-start-btn" type="submit">ENTRAR</button>
+      </form>
+      <p class="auth-note">Sua senha é protegida pelo Firebase: ele guarda só uma "impressão digital" (hash) dela, nunca a senha em si.</p>
+      <p id="auth-note-register" class="auth-note hidden">Seus recordes atuais deste aparelho serão copiados para a conta nova. Não dá para recuperar a senha esquecida (não pedimos e-mail), então anote-a. O nome de usuário aparece para todos no ranking: não use seu nome real.</p>
+    </div>
+  </div>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <!-- Firebase (versão "compat", funciona com scripts simples) -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <script src="firebase-config.js"></script>
+
   <script src="script.js"></script>
+  <script src="online.js"></script>
 </body>
 </html>
