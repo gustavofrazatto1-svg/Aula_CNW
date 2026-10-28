@@ -15,4 +15,3 @@ Jogo web responsivo com controles na tela para celular e suporte a teclado.
 Abra o link `https://gustavofrazatto1-svg.github.io/Aula_CNW/` no navegador.
 
 
-Foi feito com a ajuda da Claude.ia .
